@@ -2,16 +2,12 @@ package com.main;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.nio.file.Path;
-
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.SwingWorker;
-
 import com.sun.jna.NativeLibrary;
 import com.views.DipalyFram;
-
 import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.player.embedded.FullScreenStrategy;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class MyMain {
@@ -120,7 +116,11 @@ public class MyMain {
 		System.exit(0);
 	}
 	
-	public static void FullScreen(){
-		
+	public static void fullScreen(){
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+	}
+	
+	public static void originalScreen(){
+		frame.setExtendedState(JFrame.NORMAL);
 	}
 }

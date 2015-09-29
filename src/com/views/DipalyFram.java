@@ -29,6 +29,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 public class DipalyFram extends JFrame {
 
@@ -41,7 +42,7 @@ public class DipalyFram extends JFrame {
 	// private JButton pauseButton;
 	private JPanel controlPanel;
 	private JProgressBar progressBar;
-	private JSlider VolumControlerSlider;
+	private JSlider volumControlerSlider;
 	private JMenuBar menuBar;
 	private JMenu mnFile;
 	private JMenuItem mntmOpenVideo;
@@ -120,24 +121,42 @@ public class DipalyFram extends JFrame {
 		playerComponent = new EmbeddedMediaPlayerComponent();
 		Canvas videoSurface = playerComponent.getVideoSurface();
 		videoSurface.addMouseListener(new MouseAdapter() {
-				String btnText = "Play";
+				String btnText = ">";
+				String btnText1 = "Full";
+				Timer mouseTime;
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					super.mouseClicked(e);
 					if(e.getClickCount() == 1){
-//						MyMain.pause();
-						if (btnText == "Play") {
-							MyMain.play();
-							btnText = "Pause";
-							playButton.setText(btnText);
+						mouseTime = new Timer(350,new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								// TODO Auto-generated method stub
+								if (playButton.getText() == ">") {
+									MyMain.play();
+									btnText = "||";
+									playButton.setText(btnText);
+								} else {
+									MyMain.pause();
+									btnText = ">";
+									playButton.setText(btnText);
+								}
+								mouseTime.stop();
+							}
+						});
+						mouseTime.restart();
+					}else if(e.getClickCount() == 2 && mouseTime.isRunning()){
+						mouseTime.stop();
+						if (FullScreenButton.getText() == "Full") {
+							MyMain.fullScreen();
+							btnText1 = "Small";
+							FullScreenButton.setText(btnText1);
+							
 						} else {
-							MyMain.pause();
-							btnText = "Play";
-							playButton.setText(btnText);
+							MyMain.originalScreen();
+							btnText1 = "Full";
+							FullScreenButton.setText(btnText1);
 						}
-						
-					}else if(e.getClickCount() == 2){
-						playerComponent.getMediaPlayer().toggleFullScreen();
 					}
 				}
 
@@ -157,28 +176,23 @@ public class DipalyFram extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				MyMain.stop();
-				
+				playButton.setText(">");
 			}
 		});
 		controlPanel.add(stopButton);
 
-		playButton = new JButton("Play");
-		playButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+		playButton = new JButton(">");
 		playButton.addMouseListener(new MouseAdapter() {
-			String btnText = "Play";
-
+			String btnText = ">";
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (btnText == "Play") {
+				if (playButton.getText() == ">") {
 					MyMain.play();
-					btnText = "Pause";
+					btnText = "||";
 					playButton.setText(btnText);
 				} else {
 					MyMain.pause();
-					btnText = "Play";
+					btnText = ">";
 					playButton.setText(btnText);
 				}
 
@@ -189,29 +203,26 @@ public class DipalyFram extends JFrame {
 		backwordButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MyMain.jumpTo((float)(((progressBar.getPercentComplete() * progressBar.getWidth() - 5)) / progressBar.getWidth()));
+				MyMain.jumpTo((float)((progressBar.getPercentComplete() * progressBar.getWidth() - 5) / progressBar.getWidth()));
 			}
 		});
 		controlPanel.add(backwordButton);
 		controlPanel.add(playButton);
 
-		/*
-		 * pauseButton = new JButton("Pause"); pauseButton.addActionListener(new
-		 * ActionListener() { public void actionPerformed(ActionEvent e) { } });
-		 * pauseButton.addMouseListener(new MouseAdapter() {
-		 * 
-		 * @Override public void mouseClicked(MouseEvent e) { MyMain.pause(); }
-		 * }); controlPanel.add(pauseButton);
-		 */
-
-		VolumControlerSlider = new JSlider();
-		VolumControlerSlider.setValue(100);
-		VolumControlerSlider.setMaximum(120);
-		VolumControlerSlider.addChangeListener(new ChangeListener() {
+		volumControlerSlider = new JSlider();
+		volumControlerSlider.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				volumControlerSlider.setValue((int)(e.getX() * ((float)volumControlerSlider.getMaximum() / volumControlerSlider.getWidth())));
+			}
+		});
+		volumControlerSlider.setValue(100);
+		volumControlerSlider.setMaximum(120);
+		volumControlerSlider.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				MyMain.setVolum(VolumControlerSlider.getValue());
+				MyMain.setVolum(volumControlerSlider.getValue());
 			}
 		});
 		
@@ -219,17 +230,32 @@ public class DipalyFram extends JFrame {
 		forwardButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				//System.out.println("curr " + playerComponent.getMediaPlayer().getTime() + "///: " + progressBar.getWidth());
-				//System.out.println("curr percent: " + progressBar.getPercentComplete() + "other: " + progressBar.getPercentComplete()* progressBar.getWidth());
-				MyMain.jumpTo((float)((10 + progressBar.getPercentComplete() * progressBar.getWidth()) / progressBar.getWidth()));
+				
+				MyMain.jumpTo((float)(((progressBar.getPercentComplete() * progressBar.getWidth() + 15)) / progressBar.getWidth()));
 			}
 		});
 		controlPanel.add(forwardButton);
 		
 		FullScreenButton = new JButton("Full");
+		FullScreenButton.addMouseListener(new MouseAdapter() {
+			String btnText = "Full";
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (FullScreenButton.getText() == "Full") {
+					MyMain.fullScreen();
+					btnText = "Small";
+					FullScreenButton.setText(btnText);
+				} else {
+					MyMain.originalScreen();
+					btnText = "Full";
+					FullScreenButton.setText(btnText);
+				}
+				
+			}
+		});
 		controlPanel.add(FullScreenButton);
 
-		controlPanel.add(VolumControlerSlider);
+		controlPanel.add(volumControlerSlider);
 
 		progressBar = new JProgressBar();
 		progressBar.addMouseListener(new MouseAdapter() {
