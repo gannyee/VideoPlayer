@@ -51,6 +51,7 @@ public class DipalyFram extends JFrame {
 	private JButton forwardButton;
 	private JButton backwordButton;
 	private JButton FullScreenButton;
+	private int flag = 0;
 	/**
 	 * Launch the application.
 	 */
@@ -86,7 +87,6 @@ public class DipalyFram extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				MyMain.openVedio();
 			}
 		});
@@ -95,7 +95,6 @@ public class DipalyFram extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				MyMain.openSubtitle();
 			}
 		});
@@ -104,7 +103,6 @@ public class DipalyFram extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				MyMain.exit();
 			}
 		});
@@ -124,6 +122,7 @@ public class DipalyFram extends JFrame {
 				String btnText = ">";
 				String btnText1 = "Full";
 				Timer mouseTime;
+				
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					if(e.getClickCount() == 1){
@@ -131,7 +130,6 @@ public class DipalyFram extends JFrame {
 							
 							@Override
 							public void actionPerformed(ActionEvent e) {
-								// TODO Auto-generated method stub
 								if (playButton.getText() == ">") {
 									MyMain.play();
 									btnText = "||";
@@ -147,16 +145,23 @@ public class DipalyFram extends JFrame {
 						mouseTime.restart();
 					}else if(e.getClickCount() == 2 && mouseTime.isRunning()){
 						mouseTime.stop();
-						if (FullScreenButton.getText() == "Full") {
+						if(flag == 0){
+							MyMain.fullScreen();
+							//flag = 1;
+						}else  if(flag == 1){
+							MyMain.originalScreen();
+							//flag = 0;
+						}
+						/*if (FullScreenButton.getText() == "Full") {
 							MyMain.fullScreen();
 							btnText1 = "Small";
 							FullScreenButton.setText(btnText1);
-							
+							System.out.println("...... " + FullScreenButton.getText());
 						} else {
 							MyMain.originalScreen();
 							btnText1 = "Full";
 							FullScreenButton.setText(btnText1);
-						}
+						}*/
 					}
 				}
 
@@ -239,9 +244,12 @@ public class DipalyFram extends JFrame {
 		FullScreenButton = new JButton("Full");
 		FullScreenButton.addMouseListener(new MouseAdapter() {
 			String btnText = "Full";
+			int flag = 0;
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (FullScreenButton.getText() == "Full") {
+	
+				MyMain.fullScreen();			
+				/*if (FullScreenButton.getText() == "Full") {
 					MyMain.fullScreen();
 					btnText = "Small";
 					FullScreenButton.setText(btnText);
@@ -249,7 +257,7 @@ public class DipalyFram extends JFrame {
 					MyMain.originalScreen();
 					btnText = "Full";
 					FullScreenButton.setText(btnText);
-				}
+				}*/
 				
 			}
 		});
@@ -282,4 +290,18 @@ public class DipalyFram extends JFrame {
 	public EmbeddedMediaPlayerComponent getPlayComponent(){
 		return playerComponent;
 	}
+	
+	public JButton getPlayButton(){
+		return playButton;
+	}
+
+	public JPanel getControlPanel() {
+		return controlPanel;
+	}
+
+
+	public void setFlag(int flag){
+		this.flag = flag;
+	}
+	
 }

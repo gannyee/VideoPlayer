@@ -1,6 +1,10 @@
 package com.main;
 
+import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.EventQueue;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -8,6 +12,7 @@ import javax.swing.SwingWorker;
 import com.sun.jna.NativeLibrary;
 import com.views.DipalyFram;
 import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.player.embedded.DefaultAdaptiveRuntimeFullScreenStrategy;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class MyMain {
@@ -99,6 +104,7 @@ public class MyMain {
 		if(v == JFileChooser.APPROVE_OPTION){
 			File file = chooser.getSelectedFile();
 			frame.getMediaPlayer().playMedia(file.getAbsolutePath());
+			frame.getPlayButton().setText("||");
 		}
 	}
 	
@@ -117,10 +123,19 @@ public class MyMain {
 	}
 	
 	public static void fullScreen(){
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.getMediaPlayer().setFullScreenStrategy(new DefaultAdaptiveRuntimeFullScreenStrategy(frame));
+		frame.getProgressBar().setVisible(false);
+		frame.getControlPanel().setVisible(false);
+		frame.getJMenuBar().setVisible(false);
+		frame.getMediaPlayer().setFullScreen(true);
+		frame.setFlag(1);
 	}
 	
 	public static void originalScreen(){
-		frame.setExtendedState(JFrame.NORMAL);
+		frame.getProgressBar().setVisible(true);
+		frame.getControlPanel().setVisible(true);
+		frame.getJMenuBar().setVisible(true);
+		frame.getMediaPlayer().setFullScreen(false);
+		frame.setFlag(0);
 	}
 }
