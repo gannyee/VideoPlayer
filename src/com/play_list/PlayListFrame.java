@@ -52,7 +52,7 @@ public class PlayListFrame extends JFrame {
 		});
 		setType(Type.UTILITY);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setMaximizedBounds(new Rectangle((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 230, 0, 230,
+		setMaximizedBounds(new Rectangle((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 400, 0, 400,
 				(int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
 		// setBounds(100, 100, 229, 394);
 		try {
