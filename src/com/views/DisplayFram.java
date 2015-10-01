@@ -12,6 +12,8 @@ import com.main.MyMain;
 import com.play_list.PlayListFrame;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,6 +66,7 @@ public class DisplayFram extends JFrame {
 	 */
 	public DisplayFram() {
 		playListFrame = new PlayListFrame();
+		setIconImage(new ImageIcon("picture/icon.png").getImage());
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentMoved(ComponentEvent e) {

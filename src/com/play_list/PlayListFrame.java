@@ -12,13 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.main.MyMain;
-import com.views.DisplayFram;
-
-import java.awt.Window.Type;
 import javax.swing.JList;
-import javax.swing.JScrollBar;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.AdjustmentEvent;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import java.awt.event.MouseAdapter;
@@ -27,8 +21,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.FlowLayout;
@@ -43,10 +35,11 @@ public class PlayListFrame extends JFrame {
 	private JButton historyClearButton;
 	private DefaultListModel dlm = new DefaultListModel();
 	private JButton searchButton;
-	private JTextField textField;
+	private JTextField searchtField;
 	private JPanel panel_1;
+
 	/**
-	 * Create the frame.
+	 * Create the frame,to display the watched history .
 	 */
 	public PlayListFrame() {
 		addWindowListener(new WindowAdapter() {
@@ -59,10 +52,12 @@ public class PlayListFrame extends JFrame {
 		});
 		setType(Type.UTILITY);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setMaximizedBounds(new Rectangle((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 230, 0, 230,(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
-		//setBounds(100, 100, 229, 394);
+		setMaximizedBounds(new Rectangle((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 230, 0, 230,
+				(int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
+		// setBounds(100, 100, 229, 394);
 		try {
-			setList(MyMain.getListHistory().readHistory());
+			if (!MyMain.getListHistory().readHistory().isEmpty())
+				setList(MyMain.getListHistory().readHistory());
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -82,10 +77,11 @@ public class PlayListFrame extends JFrame {
 		list.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(e.getClickCount() == 2){
-					String name = MyMain.getListView().getList().get(MyMain.getListView().getList().size() - 1 - list.getSelectedIndex());
-					System.out.println("list hight: " + list.getSelectedIndex());
-					System.out.println("item: " + name);
+				if (e.getClickCount() == 2) {
+					String name = MyMain.getListView().getList()
+							.get(MyMain.getListView().getList().size() - 1 - list.getSelectedIndex());
+//					System.out.println("list hight: " + list.getSelectedIndex());
+//					System.out.println("item: " + name);
 					MyMain.openVedioFromList(name);
 					setList(MyMain.getListView().getList());
 					getScrollPane().setViewportView(getList());
@@ -94,29 +90,79 @@ public class PlayListFrame extends JFrame {
 		});
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(getList());
-		
+
 		panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
 		panel.setLayout(new BorderLayout(0, 0));
-		
+
 		panel_1 = new JPanel();
 		panel.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		textField = new JTextField();
-		panel_1.add(textField);
-		textField.setColumns(10);
-		
+
+		searchtField = new JTextField();
+		searchtField.setText("soon come!");
+		panel_1.add(searchtField);
+		searchtField.setColumns(10);
+
+		//History search, will realize it when i am free
 		searchButton = new JButton("Search History");
+		searchButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				final MyDialog dialog = new MyDialog();
+				dialog.setVisible(true);
+				dialog.getCancelButton().setVisible(false);
+				dialog.setText("The Performance will come soon!!");
+				dialog.setBounds(MyMain.getFrame().getPlayListFrame().getX() + 15,
+						MyMain.getFrame().getPlayListFrame().getY() + 100, 350, 115);
+				dialog.getOkButton().addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						dialog.setVisible(false);
+					}
+				});
+			}
+		});
 		panel_1.add(searchButton);
-		
+
 		historyClearButton = new JButton("Clear History");
 		panel_1.add(historyClearButton);
+		
+		//Clear history
 		historyClearButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
+				final MyDialog dialog = new MyDialog();
+				dialog.setVisible(true);
+				dialog.setText("Are You Sure To Clearn History?");
+				dialog.setBounds(MyMain.getFrame().getPlayListFrame().getX() + 15,
+						MyMain.getFrame().getPlayListFrame().getY() + 100, 350, 115);
+				dialog.getCancelButton().addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						dialog.setVisible(false);
+					}
+				});
+
+				dialog.getOkButton().addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						try {
+							dialog.setVisible(false);
+							MyMain.getListHistory().cleanHistory();
+							dlm.clear();
+							list.setModel(dlm);
+							scrollPane.setViewportView(getList());
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+
+					}
+				});
+
 			}
+
 		});
 
 	}
@@ -129,24 +175,23 @@ public class PlayListFrame extends JFrame {
 		this.flag = flag;
 	}
 
-	public JList getList(){
-		
+	public JList getList() {
+
 		return list;
 	}
 
 	public void setList(ArrayList<String> arrayList) {
-		
+
 		dlm = new DefaultListModel();
-		for(int i = arrayList.size() - 1; i >= 0;i --){
+		for (int i = arrayList.size() - 1; i >= 0; i--) {
 			dlm.addElement(arrayList.get(i));
 		}
-		
+
 		list.setModel(dlm);
 	}
 
 	public JScrollPane getScrollPane() {
 		return scrollPane;
 	}
-	
-	
+
 }

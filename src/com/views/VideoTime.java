@@ -1,5 +1,10 @@
 package com.views;
 
+/**
+ * Calculate current time and total time
+ * @author ganyee
+ *
+ */
 public class VideoTime {
 	
 	private int secondTotal;

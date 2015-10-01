@@ -7,6 +7,11 @@ import java.awt.event.KeyEvent;
 
 import com.main.MyMain;
 
+/**
+ * Key board listener
+ * @author ganyee
+ *
+ */
 public class KeyBordListenerEven {
 
 	public void keyBordListner(){
@@ -55,12 +60,6 @@ public class KeyBordListenerEven {
 						}
 					}
 						break;
-					/*case KeyEvent.VK_F7:
-						btnAuto.doClick();
-						break;
-					case KeyEvent.VK_F8:
-						btnStop.doClick();
-						break;*/
 					}
 				}
 			}
