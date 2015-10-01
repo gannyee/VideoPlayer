@@ -5,12 +5,32 @@ import java.awt.DisplayMode;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
+import javax.swing.text.html.ListView;
+
+import com.history.ListHistory;
+import com.play_list.PlayListFrame;
+import com.play_list.ViewList;
 import com.sun.jna.NativeLibrary;
-import com.views.DipalyFram;
+import com.views.ControlFrame;
+import com.views.DisplayFram;
+import com.views.MyLogo;
+import com.views.VideoTime;
+
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.player.embedded.DefaultAdaptiveRuntimeFullScreenStrategy;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -18,11 +38,24 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 public class MyMain {
 
 //	private static final String NATIVE_LIBRARY_SEARCH_PATH = "D:\\VideoLAN\\VLC";
-	private static DipalyFram frame;
+	private static DisplayFram frame;
 	private static String filePath;
-	
+	private static ControlFrame controlFrame;
+	private static VideoTime videoTime;
+	private static ViewList listView = new ViewList();
+	private static ListHistory listHistory = new ListHistory();
 	public static void main(String[] args) {
-	
+		try {
+			listView.setList(listHistory.readHistory());
+			listView.setMap(listHistory.readHistoryMap());
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		//Decide the platform
 		if(RuntimeUtil.isWindows())
 			filePath = "D:\\VideoLAN\\VLC";
@@ -38,8 +71,12 @@ public class MyMain {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					frame = new DipalyFram();
+					frame = new DisplayFram();
 					frame.setVisible(true);
+					controlFrame = new ControlFrame();
+					
+					
+					videoTime = new VideoTime();
 					String[] optionDecode = {"--subsdec-encoding=GB18030"};
 //					frame.getMediaPlayer().playMedia("D:\\Downloads\\ELECTROSHOCK - ESMA 2011-SD.mp4",optionDecode);
 					frame.getMediaPlayer().prepareMedia("D:\\Downloads\\ELECTROSHOCK - ESMA 2011-SD.mp4",optionDecode);
@@ -50,18 +87,23 @@ public class MyMain {
 							while(true){
 								long totalTime = frame.getMediaPlayer().getLength();
 								long currentTime = frame.getMediaPlayer().getTime();
+								videoTime.timeCalculate(totalTime, currentTime);
+								frame.getCurrentLabel().setText(videoTime.getMinitueCurrent() + ":" + videoTime.getSecondCurrent());
+								frame.getTotalLabel().setText(videoTime.getMinitueTotal() + ":" + videoTime.getSecondTotal());
+								controlFrame.getCurrentLabel().setText(frame.getCurrentLabel().getText());
+								controlFrame.getTotalLabel().setText(frame.getTotalLabel().getText());
 								float percent = (float)currentTime / totalTime;
 								publish((int)(percent * 100));
-								Thread.sleep(100);
+								Thread.sleep(200);
 							}
 						}
 						protected void process(java.util.List<Integer> chunks) {
 							for(int v : chunks){
 								frame.getProgressBar().setValue(v);
+								controlFrame.getProgressBar().setValue(v);
 							}
 						};
 					}.execute();
-					frame.getMediaPlayer().toggleFullScreen();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -69,16 +111,21 @@ public class MyMain {
 		});
 	}
 
+	
 	public static void play(){
 		frame.getMediaPlayer().play();
+		frame.getPlayButton().setText("||");
+		
 	}
 	
 	public static void pause(){
 		frame.getMediaPlayer().pause();
+		frame.getPlayButton().setText(">");
 	}
 	
 	public static void stop(){
 		frame.getMediaPlayer().stop();
+		frame.getPlayButton().setText(">");
 	}
 	
 	public static void forword(float to){
@@ -96,6 +143,8 @@ public class MyMain {
 	
 	public static void setVolum(int v){
 		frame.getMediaPlayer().setVolume(v);
+		frame.getVolumLabel().setText("" + frame.getMediaPlayer().getVolume());
+		controlFrame.getVolumLabel().setText("" + frame.getMediaPlayer().getVolume());
 	}
 	
 	public static void openVedio(){
@@ -103,9 +152,63 @@ public class MyMain {
 		int v = chooser.showOpenDialog(null);
 		if(v == JFileChooser.APPROVE_OPTION){
 			File file = chooser.getSelectedFile();
+			String name = file.getName();
+			String path = file.getAbsolutePath();
+			//System.out.println("name: " + name + " abpath: " + file.getAbsolutePath() + " path: " + file.getPath());
+			if(listView.getList().contains(name)){
+				listView.getList().remove(name);
+				listView.setList(name);
+				listView.setMap(name,path);
+			}else{
+				listView.setList(name);
+				listView.setMap(name,path);
+			}
+			//Save the list history
+			try {
+				listHistory.writeHistory(listView.getList());
+				listHistory.writeHistory(listView.getMap());
+				System.out.println("read: " + listHistory.readHistory());
+				System.out.println("read1: " + listHistory.readHistoryMap());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			frame.getMediaPlayer().playMedia(file.getAbsolutePath());
 			frame.getPlayButton().setText("||");
 		}
+	}
+	
+	public static void openVedioFromList(String name){
+		
+			String path = listView.getMap().get(name);
+			if(listView.getList().contains(name)){
+				listView.getList().remove(name);
+				listView.setList(name);
+				listView.setMap(name,path);
+			}else{
+				listView.setList(name);
+				listView.setMap(name,path);
+			}
+		//	System.out.println("name: " + name + " abpath: " + path);
+			
+			//Save the list history
+			try {
+				listHistory.writeHistory(listView.getList());
+				listHistory.writeHistory(listView.getMap());
+				System.out.println("read: " + listHistory.readHistory());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			frame.getMediaPlayer().playMedia(path);
+			frame.getPlayButton().setText("||");
 	}
 	
 	public static void openSubtitle(){
@@ -126,16 +229,80 @@ public class MyMain {
 		frame.getMediaPlayer().setFullScreenStrategy(new DefaultAdaptiveRuntimeFullScreenStrategy(frame));
 		frame.getProgressBar().setVisible(false);
 		frame.getControlPanel().setVisible(false);
+		frame.getProgressTimePanel().setVisible(false);
 		frame.getJMenuBar().setVisible(false);
 		frame.getMediaPlayer().setFullScreen(true);
+		controlFrame.getVolumLabel().setText("" + frame.getMediaPlayer().getVolume());
+		controlFrame.getListButton().setText("List>>");
+
 		frame.setFlag(1);
+		frame.getPlayComponent().getVideoSurface().addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				// TODO Auto-generated method stub
+				if(frame.getFlag() == 1){
+					controlFrame.setLocation((frame.getWidth() - controlFrame.getWidth()) / 2, frame.getHeight() - controlFrame.getHeight());
+					controlFrame.setVisible(true);
+					controlFrame.getVolumControlerSlider().setValue(frame.getVolumControlerSlider().getValue());
+					if(frame.getMediaPlayer().isPlaying())
+						controlFrame.getPlayButton().setText("||");
+					else
+						controlFrame.getPlayButton().setText(">");
+					
+				}
+
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+
 	}
 	
 	public static void originalScreen(){
 		frame.getProgressBar().setVisible(true);
 		frame.getControlPanel().setVisible(true);
+		frame.getProgressTimePanel().setVisible(true);
 		frame.getJMenuBar().setVisible(true);
 		frame.getMediaPlayer().setFullScreen(false);
 		frame.setFlag(0);
+		if(frame.getMediaPlayer().isPlaying())
+			frame.getPlayButton().setText("||");
+		else
+			frame.getPlayButton().setText(">");
+		
+		if(frame.getPlayListFrame().getFlag() == 1){
+			frame.getListButton().setText("List>>");
+		}
+		else if(frame.getPlayListFrame().getFlag() == 0){
+			frame.getListButton().setText("<<List");
+		}
+		controlFrame.setVisible(false);
 	}
+
+	public static DisplayFram getFrame() {
+		return frame;
+	}
+	
+	public static ControlFrame getControlFrame(){
+		return controlFrame;
+	}
+	public void setLogo(){
+		MyLogo logo = new MyLogo();
+		frame.getMediaPlayer().setLogo(logo.getLogo());
+	}
+
+	public static ViewList getListView() {
+		return listView;
+	}
+
+
+	public static ListHistory getListHistory() {
+		return listHistory;
+	}
+	
 }
