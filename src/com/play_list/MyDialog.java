@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -29,6 +30,7 @@ public class MyDialog extends JDialog {
 		setAlwaysOnTop(true);
 		setIconImage(new ImageIcon("picture/icon.png").getImage());
 		setSize(350, 115);
+		setMinimumSize(new Dimension(350, 115));
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

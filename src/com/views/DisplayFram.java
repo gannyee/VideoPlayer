@@ -2,6 +2,8 @@ package com.views;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -89,9 +91,12 @@ public class DisplayFram extends JFrame {
 				}
 				
 			}
+			
 		});
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 653, 394);
+		setMinimumSize(new Dimension(653, 394));
+		setBackground(Color.BLUE);
 		kble = new KeyBordListenerEven();
 		kble.keyBordListner();
 		menuBar = new JMenuBar();

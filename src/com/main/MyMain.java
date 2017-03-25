@@ -46,7 +46,7 @@ public class MyMain {
 
 		// Decide the platform
 		if (RuntimeUtil.isWindows())
-			filePath = "D:\\VideoLAN\\VLC";
+			filePath = "lib//";
 		else if (RuntimeUtil.isMac())
 			filePath = "/Applications/VLC.app/Contents/MacOS/lib";
 		else if (RuntimeUtil.isNix())

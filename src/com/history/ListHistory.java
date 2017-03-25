@@ -1,5 +1,6 @@
 package com.history;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,11 +14,17 @@ import java.util.HashMap;
 public class ListHistory {
 	
 	//Default history saving path 
-	private static String path1 = "D:\\output.txt";
-	private static String path2 = "D:\\output1.txt";
+	private static String path1 = "output";
+	private static String path2 = "output1";
 	
 	//Write history： movie name record into the file
 	public static void writeHistory(ArrayList<String> list) throws IOException{
+		File playListHisFile = new File(path1);
+		if (!playListHisFile.exists()) {
+			playListHisFile.createNewFile();
+		}
+		
+	
 		FileOutputStream fos = new FileOutputStream(path1);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(list);
@@ -25,6 +32,11 @@ public class ListHistory {
 	}
 	//Read history:movie name record from the file
 	public static ArrayList<String> readHistory() throws ClassNotFoundException, IOException{
+		File playListHisFile = new File(path1);
+		if (!playListHisFile.exists()) {
+			playListHisFile.createNewFile();
+		}
+		
 		FileInputStream fis = new FileInputStream(path1);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		ArrayList<String> historyList = (ArrayList<String>) ois.readObject();
@@ -34,6 +46,11 @@ public class ListHistory {
 	
 	//Write history:movie name and path record into the file
 	public static void writeHistory(HashMap<String, String> map) throws IOException{
+		File playListHisFile = new File(path2);
+		if (!playListHisFile.exists()) {
+			playListHisFile.createNewFile();
+		}
+		
 		FileOutputStream fos = new FileOutputStream(path2);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(map);
@@ -42,6 +59,11 @@ public class ListHistory {
 	
 	//Read history:movie name and path record from the file
 	public static HashMap<String, String> readHistoryMap() throws ClassNotFoundException, IOException{
+		File playListHisFile = new File(path2);
+		if (!playListHisFile.exists()) {
+			playListHisFile.createNewFile();
+		}
+		
 		FileInputStream fis = new FileInputStream(path2);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		HashMap<String, String> historyMap = (HashMap<String, String>) ois.readObject();

@@ -1,6 +1,7 @@
 package com.play_list;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -55,6 +56,7 @@ public class PlayListFrame extends JFrame {
 		setMaximizedBounds(new Rectangle((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() - 400, 0, 400,
 				(int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
 		// setBounds(100, 100, 229, 394);
+		
 		try {
 			if (!MyMain.getListHistory().readHistory().isEmpty())
 				setList(MyMain.getListHistory().readHistory());
@@ -103,7 +105,7 @@ public class PlayListFrame extends JFrame {
 		searchtField.setText("soon come!");
 		panel_1.add(searchtField);
 		searchtField.setColumns(10);
-
+		setMinimumSize(new Dimension(360, 394));
 		//History search, will realize it when i am free
 		searchButton = new JButton("Search History");
 		searchButton.addMouseListener(new MouseAdapter() {
@@ -115,6 +117,7 @@ public class PlayListFrame extends JFrame {
 				dialog.setText("The Performance will come soon!!");
 				dialog.setBounds(MyMain.getFrame().getPlayListFrame().getX() + 15,
 						MyMain.getFrame().getPlayListFrame().getY() + 100, 350, 115);
+				dialog.setMinimumSize(new Dimension(350, 115));
 				dialog.getOkButton().addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
@@ -137,6 +140,7 @@ public class PlayListFrame extends JFrame {
 				dialog.setText("Are You Sure To Clearn History?");
 				dialog.setBounds(MyMain.getFrame().getPlayListFrame().getX() + 15,
 						MyMain.getFrame().getPlayListFrame().getY() + 100, 350, 115);
+				dialog.setMinimumSize(new Dimension(350, 115));
 				dialog.getCancelButton().addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
