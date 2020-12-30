@@ -1,5 +1,7 @@
 package com.history;
 
+import jdk.nashorn.internal.parser.JSONParser;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,6 +11,8 @@ import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class ListHistory {
@@ -36,12 +40,25 @@ public class ListHistory {
 		if (!playListHisFile.exists()) {
 			playListHisFile.createNewFile();
 		}
-		
+
 		FileInputStream fis = new FileInputStream(path1);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		ArrayList<String> historyList = (ArrayList<String>) ois.readObject();
-		ois.close();
-		return historyList;
+		byte[] buffer = new byte[10];
+		StringBuilder sb = new StringBuilder();
+		while (fis.read(buffer) != -1) {
+			sb.append(new String(buffer));
+			buffer = new byte[10];
+		}
+		fis.close();
+
+
+
+		String str[] = sb.toString().split(",");
+		ArrayList<String> his = new ArrayList<String>();
+		for (String history : str){
+			his.add(history);
+		}
+		return his;
+
 	}
 	
 	//Write history:movie name and path record into the file
@@ -64,11 +81,8 @@ public class ListHistory {
 			playListHisFile.createNewFile();
 		}
 		
-		FileInputStream fis = new FileInputStream(path2);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		HashMap<String, String> historyMap = (HashMap<String, String>) ois.readObject();
-		ois.close();
-		return historyMap;
+
+		return new HashMap<String, String>(1);
 	}
 	
 	//Clear storage history record

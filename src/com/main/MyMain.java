@@ -53,7 +53,7 @@ public class MyMain {
 			filePath = "/home/linux/vlc/install/lib";
 
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), filePath);
-		System.out.println(LibVlc.INSTANCE.libvlc_get_version());
+		//System.out.println(LibVlc.INSTANCE.libvlc_get_version());
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
